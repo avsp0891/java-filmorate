@@ -23,7 +23,7 @@ class FilmControllerTest {
         film.setName("Фильм");
         film.setDescription("Описание");
         film.setReleaseDate(LocalDate.of(1900, 12,12));
-        film.setFilmDuration(Duration.ofHours(2));
+        film.setDuration(Duration.ofHours(2));
 
     }
 
@@ -80,7 +80,7 @@ class FilmControllerTest {
 
     @Test
     void addFilmValidation4() {
-        film.setFilmDuration(Duration.ofMinutes(-1));
+        film.setDuration(Duration.ofMinutes(-1));
         final ValidationException e = assertThrows(
                 ValidationException.class,
                 () -> filmController.addFilm(film)
@@ -95,7 +95,7 @@ class FilmControllerTest {
         film2.setName("Фильм2");
         film2.setDescription("Описание2");
         film2.setReleaseDate(LocalDate.of(1901, 12,12));
-        film2.setFilmDuration(Duration.ofHours(3));
+        film2.setDuration(Duration.ofHours(3));
         filmController.changeFilm(0, film2);
         assertEquals(film2, filmController.getFilmRepository().get(0));
     }

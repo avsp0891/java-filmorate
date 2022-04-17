@@ -47,6 +47,16 @@ public class FilmController {
         return null;
     }
 
+    @PutMapping
+    public Film changeFilm(@RequestBody Film film) {
+        if (filmRepository.containsKey(film.getId())) {
+            filmValidation(film);
+            filmRepository.put(film.getId(), film);
+            return film;
+        }
+        return null;
+    }
+
 
     private void filmValidation(Film film) {
         if (film.getName().isBlank() || film.getName() == null) {
@@ -61,8 +71,8 @@ public class FilmController {
             log.warn("Задана неверная дата релиза фильма - " + film.getReleaseDate());
             throw new ValidationException("Неверная дата релиза фильма.");
         }
-        if (film.getFilmDuration().isNegative()) {
-            log.warn("Задана отрицательная продолжительность - " + film.getFilmDuration());
+        if (film.getDuration().isNegative()) {
+            log.warn("Задана отрицательная продолжительность - " + film.getDuration());
             throw new ValidationException("Продолжительность фильма не может быть отрицательной.");
         }
     }

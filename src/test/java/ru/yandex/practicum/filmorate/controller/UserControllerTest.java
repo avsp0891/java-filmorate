@@ -21,9 +21,9 @@ class UserControllerTest {
         userController = new UserController();
         user = new User();
         user.setEmail("test@test.ru");
-        user.setUserLogin("userLogin");
-        user.setDisplayName("displayName");
-        user.setDateOfBirth(LocalDate.of(1950, 12, 12));
+        user.setLogin("userLogin");
+        user.setName("displayName");
+        user.setBirthday(LocalDate.of(1950, 12, 12));
     }
 
 
@@ -68,7 +68,7 @@ class UserControllerTest {
 
     @Test
     void addUserValidation3() {
-        user.setUserLogin("");
+        user.setLogin("");
         final ValidationException e = assertThrows(
                 ValidationException.class,
                 () -> userController.addUser(user)
@@ -78,7 +78,7 @@ class UserControllerTest {
 
     @Test
     void addUserValidation4() {
-        user.setUserLogin("логин с пробелами");
+        user.setLogin("логин с пробелами");
         final ValidationException e = assertThrows(
                 ValidationException.class,
                 () -> userController.addUser(user)
@@ -88,14 +88,14 @@ class UserControllerTest {
 
     @Test
     void addUserValidation5() {
-        user.setDisplayName("");
+        user.setName("");
         userController.addUser(user);
         assertEquals(user, userController.getUserRepository().get(0));
     }
 
     @Test
     void addUserValidation6() {
-        user.setDateOfBirth(LocalDate.now().plusDays(1));
+        user.setBirthday(LocalDate.now().plusDays(1));
         final ValidationException e = assertThrows(
                 ValidationException.class,
                 () -> userController.addUser(user)
@@ -108,9 +108,9 @@ class UserControllerTest {
         userController.addUser(user);
         User user2 = new User();
         user2.setEmail("test2@test.ru");
-        user2.setUserLogin("userLogin2");
-        user2.setDisplayName("displayName2");
-        user2.setDateOfBirth(LocalDate.of(1960, 12, 12));
+        user2.setLogin("userLogin2");
+        user2.setName("displayName2");
+        user2.setBirthday(LocalDate.of(1960, 12, 12));
         userController.changeUser(0, user2);
         assertEquals(user2, userController.getUserRepository().get(0));
     }

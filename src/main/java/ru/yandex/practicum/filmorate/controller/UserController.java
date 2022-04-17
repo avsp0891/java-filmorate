@@ -46,6 +46,16 @@ public class UserController {
        return null;
     }
 
+    @PutMapping
+    public User changeUser(@RequestBody User user) {
+        if (userRepository.containsKey(user.getId())) {
+            userValidation(user);
+            userRepository.put(user.getId(), user);
+            return user;
+        }
+        return null;
+    }
+
 
     private void userValidation(User user) {
         if (user.getEmail().isBlank() || user.getEmail() == null) {
@@ -56,20 +66,20 @@ public class UserController {
             log.warn("Адрес электронной почты не содержит символ  '@' - " + user.getEmail());
             throw new ValidationException("Адрес электронной почты должен содержать символ '@'.");
         }
-        if (user.getUserLogin().isBlank() || user.getUserLogin() == null) {
-            log.warn("Передан пустой логин пользователя - " + user.getUserLogin());
+        if (user.getLogin().isBlank() || user.getLogin() == null) {
+            log.warn("Передан пустой логин пользователя - " + user.getLogin());
             throw new ValidationException("Логин пользователя не может быть пустым.");
         }
-        if (user.getUserLogin().contains(" ")) {
-            log.warn("Логин пользователя содержит пробелы - " + user.getUserLogin());
+        if (user.getLogin().contains(" ")) {
+            log.warn("Логин пользователя содержит пробелы - " + user.getLogin());
             throw new ValidationException("Логин пользователя не должен содержать пробелы.");
         }
-        if (user.getDateOfBirth().isAfter(LocalDate.now())) {
-            log.warn("Неверная дата рождения - " + user.getDateOfBirth());
+        if (user.getBirthday().isAfter(LocalDate.now())) {
+            log.warn("Неверная дата рождения - " + user.getBirthday());
             throw new ValidationException("Неверная дата рождения.");
         }
-        if (user.getDisplayName().isBlank() || user.getDisplayName() == null) {
-            user.setDisplayName(user.getUserLogin());
+        if (user.getName().isBlank() || user.getName() == null) {
+            user.setName(user.getLogin());
         }
     }
 
