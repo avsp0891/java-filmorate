@@ -76,15 +76,15 @@ class UserControllerTest {
         assertEquals("Логин пользователя не может быть пустым.", e.getMessage());
     }
 
-    @Test
-    void addUserValidation4() {
-        user.setLogin("логин с пробелами");
-        final ValidationException e = assertThrows(
-                ValidationException.class,
-                () -> userController.addUser(user)
-        );
-        assertEquals("Логин пользователя не должен содержать пробелы.", e.getMessage());
-    }
+//    @Test
+//    void addUserValidation4() {
+//        user.setLogin("логин с пробелами");
+//        final ValidationException e = assertThrows(
+//                ValidationException.class,
+//                () -> userController.addUser(user)
+//        );
+//        assertEquals("Логин пользователя не должен содержать пробелы.", e.getMessage());
+//    }
 
     @Test
     void addUserValidation5() {
