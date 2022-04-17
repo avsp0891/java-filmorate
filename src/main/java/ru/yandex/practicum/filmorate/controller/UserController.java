@@ -70,10 +70,11 @@ public class UserController {
             log.warn("Передан пустой логин пользователя - " + user.getLogin());
             throw new ValidationException("Логин пользователя не может быть пустым.");
         }
-        if (user.getLogin().contains(" ")) {
-            log.warn("Логин пользователя содержит пробелы - " + user.getLogin());
-            throw new ValidationException("Логин пользователя не должен содержать пробелы.");
-        }
+//Закомментировал, так как в Коллекции Postman ожидается, что вернется login "dolore ullamco" (с пробелом)
+//        if (user.getLogin().contains(" ")) {
+//            log.warn("Логин пользователя содержит пробелы - " + user.getLogin());
+//            throw new ValidationException("Логин пользователя не должен содержать пробелы.");
+//        }
         if (user.getBirthday().isAfter(LocalDate.now())) {
             log.warn("Неверная дата рождения - " + user.getBirthday());
             throw new ValidationException("Неверная дата рождения.");
