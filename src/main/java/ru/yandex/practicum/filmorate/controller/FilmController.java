@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.IdGenerator;
 
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +31,7 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film addFilm(@RequestBody Film film) {
+    public Film addFilm(@Valid @RequestBody Film film) {
         log.debug("Добавление нового фильма : \n{}", film);
         filmValidation(film);
         film.setId(idGenerator.getNextIdCount());
@@ -39,7 +40,7 @@ public class FilmController {
     }
 
     @PutMapping("/{id}")
-    public Film changeFilm(@PathVariable(value = "id") Integer filmId, @RequestBody Film film) {
+    public Film changeFilm(@PathVariable(value = "id") Integer filmId, @Valid @RequestBody Film film) {
         log.debug("Изменение нового фильма : \n{}", film);
         if (filmRepository.containsKey(filmId)) {
             filmValidation(film);
@@ -51,7 +52,7 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film changeFilm(@RequestBody Film film) {
+    public Film changeFilm(@Valid @RequestBody Film film) {
         log.debug("Изменение нового фильма : \n{}", film);
         if (filmRepository.containsKey(film.getId())) {
             filmValidation(film);
