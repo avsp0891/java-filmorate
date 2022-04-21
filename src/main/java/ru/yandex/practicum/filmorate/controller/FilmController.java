@@ -25,11 +25,13 @@ public class FilmController {
 
     @GetMapping
     public List<Film> findAll() {
+        log.debug("Получение списка всех фильмов");
         return new ArrayList<>(filmRepository.values());
     }
 
     @PostMapping
     public Film addFilm(@RequestBody Film film) {
+        log.debug("Добавление нового фильма : \n{}", film);
         filmValidation(film);
         film.setId(idGenerator.getNextIdCount());
         filmRepository.put(film.getId(), film);
@@ -38,6 +40,7 @@ public class FilmController {
 
     @PutMapping("/{id}")
     public Film changeFilm(@PathVariable(value = "id") Integer filmId, @RequestBody Film film) {
+        log.debug("Изменение нового фильма : \n{}", film);
         if (filmRepository.containsKey(filmId)) {
             filmValidation(film);
             film.setId(filmId);
@@ -49,6 +52,7 @@ public class FilmController {
 
     @PutMapping
     public Film changeFilm(@RequestBody Film film) {
+        log.debug("Изменение нового фильма : \n{}", film);
         if (filmRepository.containsKey(film.getId())) {
             filmValidation(film);
             filmRepository.put(film.getId(), film);
