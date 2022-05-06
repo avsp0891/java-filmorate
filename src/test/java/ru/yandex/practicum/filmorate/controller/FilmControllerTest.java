@@ -2,28 +2,41 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.filmorate.Exceptions.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.Exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.Exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class FilmControllerTest {
-
+    private User user;
     private Film film;
     private FilmController filmController;
+    private FilmStorage filmStorage;
+    private UserStorage userStorage;
+    private FilmService filmService;
 
     @BeforeEach
     private void setUp() {
-        filmController = new FilmController();
-        film = new Film();
-        film.setName("Фильм");
-        film.setDescription("Описание");
-        film.setReleaseDate(LocalDate.of(1900, 12,12));
-        film.setDuration(Duration.ofHours(2));
+        userStorage = new InMemoryUserStorage();
+        filmStorage = new InMemoryFilmStorage();
+        filmService = new FilmService(filmStorage, userStorage);
+        filmController = new FilmController(filmStorage, filmService);
+        film = new Film("Фильм", "Описание", LocalDate.of(1900, 12, 12), 120);
+        user = new User("test@test.ru", "userLogin", "displayName", LocalDate.of(1950, 12, 12));
 
     }
 
@@ -36,6 +49,21 @@ class FilmControllerTest {
     }
 
     @Test
+    void getFilmByIdStandard() {
+        filmController.addFilm(film);
+        assertEquals(film, filmController.getFilmById(1));
+    }
+
+    @Test
+    void getFilmByIdFilmNotFound() {
+        final FilmNotFoundException e = assertThrows(
+                FilmNotFoundException.class,
+                () -> filmController.getFilmById(1)
+        );
+        assertEquals("Фильм с id 1 не найден", e.getMessage());
+    }
+
+    @Test
     void findAllEmptyList() {
         assertEquals(0, filmController.findAll().size());
     }
@@ -43,7 +71,7 @@ class FilmControllerTest {
     @Test
     void addFilmStandard() {
         filmController.addFilm(film);
-        assertEquals(film, filmController.getFilmRepository().get(0));
+        assertEquals(film, filmStorage.getFilms().get(1));
     }
 
     @Test
@@ -70,7 +98,7 @@ class FilmControllerTest {
 
     @Test
     void addFilmValidation3() {
-        film.setReleaseDate(LocalDate.of(1895,12,27));
+        film.setReleaseDate(LocalDate.of(1895, 12, 27));
         final ValidationException e = assertThrows(
                 ValidationException.class,
                 () -> filmController.addFilm(film)
@@ -80,7 +108,7 @@ class FilmControllerTest {
 
     @Test
     void addFilmValidation4() {
-        film.setDuration(Duration.ofMinutes(-1));
+        film.setDuration(-1);
         final ValidationException e = assertThrows(
                 ValidationException.class,
                 () -> filmController.addFilm(film)
@@ -91,24 +119,94 @@ class FilmControllerTest {
     @Test
     void changeFilmStandard() {
         filmController.addFilm(film);
-        Film film2 = new Film();
-        film2.setName("Фильм2");
-        film2.setDescription("Описание2");
-        film2.setReleaseDate(LocalDate.of(1901, 12,12));
-        film2.setDuration(Duration.ofHours(3));
-        filmController.changeFilm(0, film2);
-        assertEquals(film2, filmController.getFilmRepository().get(0));
+        Film film2 = new Film("Фильм2", "Описание2", LocalDate.of(1901, 12, 12), 180);
+        filmController.changeFilm(1, film2);
+        assertEquals(film2, filmStorage.getFilms().get(1));
     }
 
     @Test
     void changeFilmNotFound() {
         filmController.changeFilm(0, film);
-        assertNull(filmController.getFilmRepository().get(0));
+        assertNull(filmStorage.getFilms().get(0));
     }
 
     @Test
     void getNextIdCount() {
-        assertEquals(0, filmController.idGenerator.getNextIdCount());
-        assertEquals(1, filmController.idGenerator.getNextIdCount());
+        assertEquals(1, filmStorage.getIdGenerator().getNextIdCount());
+        assertEquals(2, filmStorage.getIdGenerator().getNextIdCount());
+    }
+
+    @Test
+    void addLikeStandard() {
+        userStorage.addUser(user);
+        filmController.addFilm(film);
+        filmController.addLike(1,1);
+        assertEquals(1, filmStorage.getFilms().get(1).getLikeCount());
+        assertEquals(Set.of(1), filmStorage.getFilms().get(1).getUsersWhoLikedTheMovie());
+    }
+
+    @Test
+    void addLikeFilmNotFound() {
+        userStorage.addUser(user);
+        final FilmNotFoundException e = assertThrows(
+                FilmNotFoundException.class,
+                () -> filmController.addLike(1,1)
+        );
+        assertEquals("Фильм с id 1 не найден", e.getMessage());
+    }
+
+    @Test
+    void addLikeUserNotFound() {
+        filmController.addFilm(film);
+        final UserNotFoundException e = assertThrows(
+                UserNotFoundException.class,
+                () -> filmController.addLike(1,1)
+        );
+        assertEquals("Пользователь с id 1 не найден", e.getMessage());
+    }
+
+    @Test
+    void deleteLikeStandard() {
+        userStorage.addUser(user);
+        filmController.addFilm(film);
+        filmController.addLike(1,1);
+        filmController.deleteLike(1,1);
+        assertEquals(0, filmStorage.getFilms().get(1).getLikeCount());
+        assertEquals(Set.of(), filmStorage.getFilms().get(1).getUsersWhoLikedTheMovie());
+    }
+
+    @Test
+    void deleteLikeFilmNotFound() {
+        final FilmNotFoundException e = assertThrows(
+                FilmNotFoundException.class,
+                () -> filmController.deleteLike(1,1)
+        );
+        assertEquals("Фильм с id 1 не найден", e.getMessage());
+    }
+
+    @Test
+    void deleteLikeUserNotFound() {
+        filmController.addFilm(film);
+        final UserNotFoundException e = assertThrows(
+                UserNotFoundException.class,
+                () -> filmController.deleteLike(1,1)
+        );
+        assertEquals("Пользователь с id 1 не найден", e.getMessage());
+    }
+
+    @Test
+    void getPopularFilmsStandard() {
+        userStorage.addUser(user);
+        User user2 = new User("2@test.ru", "userLogin2", "displayName2", LocalDate.of(1960, 12, 12));
+        Film film2 = new Film("Фильм2", "Описание2", LocalDate.of(1901, 12, 12), 180);
+        userStorage.addUser(user);
+        userStorage.addUser(user2);
+        filmController.addFilm(film);
+        filmController.addFilm(film2);
+        filmController.addLike(1,1);
+        filmController.addLike(2,1);
+        filmController.addLike(2,2);
+        assertEquals(List.of(film2,film), filmController.getPopularFilms(2));
+
     }
 }
