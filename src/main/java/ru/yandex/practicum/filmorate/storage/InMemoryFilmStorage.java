@@ -1,17 +1,13 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.Exceptions.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.Exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.IdGenerator;
-
-import java.time.LocalDate;
 import java.util.*;
 
+import static ru.yandex.practicum.filmorate.model.FilmValidation.filmValidation;
 
-@Slf4j
 @Component
 public class InMemoryFilmStorage implements FilmStorage{
 
@@ -70,26 +66,12 @@ public class InMemoryFilmStorage implements FilmStorage{
         return null;
     }
 
-    private void filmValidation(Film film) {
-        if (film.getName().isBlank() || film.getName() == null) {
-            log.warn("Передано пустое название фильма - " + film.getName());
-            throw new ValidationException("Название фильма не может быть пустым.");
+    @Override
+    public Film deleteFilmById(Integer filmId) {
+        if (!films.containsKey(filmId)) {
+            throw new FilmNotFoundException("Фильм с id " + filmId + " не найден");
         }
-        if (film.getDescription().length() > 200) {
-            log.warn("Превышена максимальная длина описания - " + film.getDescription().length());
-            throw new ValidationException("Максимальная длина описания — 200 символов.");
-        }
-        if (film.getDescription().isBlank() || film.getDescription() == null) {
-            log.warn("Превышена максимальная длина описания - " + film.getDescription());
-            throw new ValidationException("Описание фильма не может быть пустым.");
-        }
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895,12,28))) {
-            log.warn("Задана неверная дата релиза фильма - " + film.getReleaseDate());
-            throw new ValidationException("Неверная дата релиза фильма.");
-        }
-        if (film.getDuration() < 0) {
-            log.warn("Задана отрицательная продолжительность - " + film.getDuration());
-            throw new ValidationException("Продолжительность фильма не может быть отрицательной.");
-        }
+        return films.remove(filmId);
     }
+
 }

@@ -49,6 +49,11 @@ class FilmControllerTest {
     }
 
     @Test
+    void findAllEmptyList() {
+        assertEquals(0, filmController.findAll().size());
+    }
+
+    @Test
     void getFilmByIdStandard() {
         filmController.addFilm(film);
         assertEquals(film, filmController.getFilmById(1));
@@ -64,8 +69,19 @@ class FilmControllerTest {
     }
 
     @Test
-    void findAllEmptyList() {
-        assertEquals(0, filmController.findAll().size());
+    void deleteFilmByIdStandard() {
+        filmController.addFilm(film);
+        filmController.deleteFilmById(1);
+        assertNull(filmStorage.getFilms().get(1));
+    }
+
+    @Test
+    void deleteFilmByIdNotFound() {
+        final FilmNotFoundException e = assertThrows(
+                FilmNotFoundException.class,
+                () -> filmController.deleteFilmById(1)
+        );
+        assertEquals("Фильм с id 1 не найден", e.getMessage());
     }
 
     @Test

@@ -21,4 +21,6 @@ public interface FilmStorage {
 
     Film changeFilm(Film film);
 
+    Film deleteFilmById(Integer filmId);
+
 }

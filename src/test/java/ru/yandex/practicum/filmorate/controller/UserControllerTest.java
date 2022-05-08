@@ -42,6 +42,11 @@ class UserControllerTest {
     }
 
     @Test
+    void findAllEmptyList() {
+        assertEquals(0, userController.findAll().size());
+    }
+
+    @Test
     void getUserByIdStandard() {
         userController.addUser(user);
         assertEquals(user, userController.getUserById(1));
@@ -57,8 +62,29 @@ class UserControllerTest {
     }
 
     @Test
-    void findAllEmptyList() {
-        assertEquals(0, userController.findAll().size());
+    void deleteUserByIdUserStandard() {
+        userController.addUser(user);
+        userController.deleteUserById(1);
+        assertNull(userStorage.getUsers().get(1));
+    }
+
+    @Test
+    void deleteUserByIdUserNotFound() {
+        final UserNotFoundException e = assertThrows(
+                UserNotFoundException.class,
+                () -> userController.deleteUserById(1)
+        );
+        assertEquals("Пользователь с id 1 не найден", e.getMessage());
+    }
+
+    @Test
+    void deleteUserByIdCheckDeleteFriend() {
+        userController.addUser(user);
+        User user2 = new User("2@test.ru", "userLogin2", "displayName2", LocalDate.of(1960, 12, 12));
+        userController.addUser(user2);
+        userController.addFriend(1,2);
+        userController.deleteUserById(1);
+        assertFalse(userStorage.getUsers().get(2).getFriends().contains(1));
     }
 
     @Test
@@ -96,16 +122,6 @@ class UserControllerTest {
         );
         assertEquals("Логин пользователя не может быть пустым.", e.getMessage());
     }
-
-//    @Test
-//    void addUserValidation4() {
-//        user.setLogin("логин с пробелами");
-//        final ValidationException e = assertThrows(
-//                ValidationException.class,
-//                () -> userController.addUser(user)
-//        );
-//        assertEquals("Логин пользователя не должен содержать пробелы.", e.getMessage());
-//    }
 
     @Test
     void addUserValidation5() {

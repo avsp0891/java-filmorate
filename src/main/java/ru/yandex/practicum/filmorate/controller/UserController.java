@@ -81,6 +81,12 @@ public class UserController {
         userService.deleteFriend(id, friendId);
     }
 
+    @DeleteMapping("/{id}")
+    public User deleteUserById(@PathVariable(value = "id") Integer id) {
+        log.debug("Удаление пользователя {}", id);
+        return userStorage.deleteUserById(id);
+    }
+
 
 
 

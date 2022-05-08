@@ -22,4 +22,6 @@ public interface UserStorage {
 
     User changeUser(User user);
 
+    User deleteUserById(Integer userId);
+
 }

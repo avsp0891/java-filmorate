@@ -74,5 +74,11 @@ public class FilmController {
         return filmService.deleteLike(filmId, userId);
     }
 
+    @DeleteMapping("/{id}")
+    public Film deleteFilmById(@PathVariable(value = "id") Integer id) {
+        log.debug("Удаление фильма : {}", id);
+        return filmStorage.deleteFilmById(id);
+    }
+
 
 }
