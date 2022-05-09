@@ -4,7 +4,7 @@ public class IdGenerator {
     private Integer idCount;
 
     public IdGenerator() {
-        this.idCount = 0;
+        this.idCount = 1;
     }
 
     public Integer getNextIdCount() {
