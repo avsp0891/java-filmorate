@@ -62,8 +62,7 @@ public class InMemoryFilmStorage implements FilmStorage{
             filmValidation(film);
             films.put(film.getId(), film);
             return film;
-        }
-        return null;
+        } else throw new FilmNotFoundException("Фильм с id " + film.getId() + " не найден");
     }
 
     @Override
