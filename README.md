@@ -14,9 +14,9 @@ f.name,
 f.description,  
 f.release_date,  
 f.duration,  
-r.rating_name  
+r.mpa_name  
 FROM film AS f  
-INNER JOIN rating AS r ON f.rating_name = r.rating_name;
+INNER JOIN mpa AS r ON f.mpa_name = r.mpa_name;
 
 ###Получение списка всех фильмов и соответствующих жанров
 
