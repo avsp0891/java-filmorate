@@ -64,7 +64,7 @@ public class InMemoryUserStorage implements UserStorage{
             users.put(user.getId(), user);
             return user;
         }
-        return null;
+        else throw new UserNotFoundException("Пользователь с id " + user.getId() + " не найден");
     }
 
     @Override
