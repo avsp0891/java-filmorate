@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 
 import javax.validation.Valid;
@@ -16,26 +15,22 @@ import java.util.*;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-
-    private final FilmStorage filmStorage;
     private final FilmService filmService;
-
     @Autowired
-    public FilmController(FilmStorage inMemoryFilmStorage, FilmService filmService) {
-        this.filmStorage = inMemoryFilmStorage;
+    public FilmController(FilmService filmService) {
         this.filmService = filmService;
     }
 
     @GetMapping
     public List<Film> findAll() {
         log.debug("Получение списка всех фильмов");
-        return filmStorage.findAll();
+        return filmService.findAll();
     }
 
     @GetMapping("/{id}")
     public Film getFilmById(@PathVariable(value = "id") Integer id) {
         log.debug("Получение фильма : {}", id);
-        return filmStorage.getFilmById(id);
+        return filmService.getFilmById(id);
     }
 
     @GetMapping("/popular")
@@ -47,19 +42,19 @@ public class FilmController {
     @PostMapping
     public Film addFilm(@Valid @RequestBody Film film) {
         log.debug("Добавление нового фильма : \n{}", film);
-        return filmStorage.addFilm(film);
+        return filmService.addFilm(film);
     }
 
     @PutMapping("/{id}")
     public Film changeFilm(@PathVariable(value = "id") Integer id, @Valid @RequestBody Film film) {
         log.debug("Изменение нового фильма : \nid - {} \nbody - {}", id, film);
-        return filmStorage.changeFilmById(id, film);
+        return filmService.changeFilmById(id, film);
     }
 
     @PutMapping
     public Film changeFilm(@Valid @RequestBody Film film) {
         log.debug("Изменение нового фильма : \n{}", film);
-        return filmStorage.changeFilm(film);
+        return filmService.changeFilm(film);
     }
 
     @PutMapping("/{filmId}/like/{userId}")
@@ -77,7 +72,7 @@ public class FilmController {
     @DeleteMapping("/{id}")
     public Film deleteFilmById(@PathVariable(value = "id") Integer id) {
         log.debug("Удаление фильма : {}", id);
-        return filmStorage.deleteFilmById(id);
+        return filmService.deleteFilmById(id);
     }
 
 
