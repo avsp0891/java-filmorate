@@ -157,11 +157,11 @@ class UserControllerTest {
         assertEquals("Пользователь с id 0 не найден", e.getMessage());
     }
 
-    @Test
-    void getNextIdCount() {
-        assertEquals(1, userStorage.getIdGenerator().getNextIdCount());
-        assertEquals(2, userStorage.getIdGenerator().getNextIdCount());
-    }
+//    @Test
+//    void getNextIdCount() {
+//        assertEquals(1, userStorage.getIdGenerator().getNextIdCount());
+//        assertEquals(2, userStorage.getIdGenerator().getNextIdCount());
+//    }
 
     @Test
     void addFriendStandard() {

@@ -4,7 +4,6 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.Exceptions.UserNotFoundException;
-import ru.yandex.practicum.filmorate.model.IdGenerator;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -26,10 +25,6 @@ public class UserService {
         return userStorage.getUsers();
     }
 
-    public IdGenerator getIdGenerator() {
-        return userStorage.getIdGenerator();
-    }
-
     public List<User> findAll() {
         return userStorage.findAll();
     }
@@ -39,12 +34,12 @@ public class UserService {
             log.info("Пользователь с идентификатором {} не найден.", userId);
             throw new UserNotFoundException("Пользователь с id " + userId + " не найден");
         }
-        return userStorage.getUserById(userId);
+        return userStorage.getById(userId);
     }
 
     public User addUser(User user) {
         userValidation(user);
-        return userStorage.addUser(user);
+        return userStorage.add(user);
     }
 
     public User changeUserById(Integer userId, User user) {
@@ -54,7 +49,7 @@ public class UserService {
         }
         userValidation(user);
         user.setId(userId);
-        return userStorage.changeUserById(userId, user);
+        return userStorage.changeById(userId, user);
     }
 
     public User changeUser(User user) {
@@ -64,7 +59,7 @@ public class UserService {
         }
         userValidation(user);
         user.setId(user.getId());
-        return userStorage.changeUser(user);
+        return userStorage.change(user);
     }
 
     public User deleteUserById(Integer userId) {
@@ -72,7 +67,7 @@ public class UserService {
             log.info("Пользователь с идентификатором {} не найден.", userId);
             throw new UserNotFoundException("Пользователь с id " + userId + " не найден");
         }
-        return userStorage.deleteUserById(userId);
+        return userStorage.deleteById(userId);
     }
 
     public User addFriend(Integer userId, Integer friendId) throws UserNotFoundException {

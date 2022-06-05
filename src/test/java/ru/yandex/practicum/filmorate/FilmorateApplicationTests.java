@@ -31,10 +31,10 @@ class FilmorateApplicationTests {
     User user3 = new User("test@test.ru", "userLogin3", "displayName", LocalDate.of(1950, 12, 12));
     User user4 = new User("test@test.ru", "userLogin4", "displayName", LocalDate.of(1950, 12, 12));
 
-    Film film1 = new Film("Фильм1", "Описание", LocalDate.of(2000, 12, 12), 120, new Mpa(1));
-    Film film2 = new Film("Фильм2", "Описание", LocalDate.of(2000, 12, 12), 120, new Mpa(1));
-    Film film3 = new Film("Фильм3", "Описание", LocalDate.of(2000, 12, 12), 120, new Mpa(1));
-    Film film4 = new Film("Фильм4", "Описание", LocalDate.of(2000, 12, 12), 120, new Mpa(1));
+    Film film1 = new Film("Фильм1", "Описание", LocalDate.of(2000, 12, 12), 120, new Mpa(1, "G"));
+    Film film2 = new Film("Фильм2", "Описание", LocalDate.of(2000, 12, 12), 120, new Mpa(1, "G"));
+    Film film3 = new Film("Фильм3", "Описание", LocalDate.of(2000, 12, 12), 120, new Mpa(1, "G"));
+    Film film4 = new Film("Фильм4", "Описание", LocalDate.of(2000, 12, 12), 120, new Mpa(1, "G"));
 
     private final UserDbStorage userStorage;
 
@@ -56,18 +56,18 @@ class FilmorateApplicationTests {
     @Test
     void getUserById() {
         user1.setId(1);
-        assertEquals(user1, userStorage.getUserById(1));
+        assertEquals(user1, userStorage.getById(1));
     }
 
     @Test
     void addUser() {
         user4.setId(4);
-        userStorage.addUser(user4);
+        userStorage.add(user4);
         assertEquals(user4, userStorage.getUsers().get(4));
     }
     @Test
     void deleteUserByIdUser() {
-        userStorage.deleteUserById(2);
+        userStorage.deleteById(2);
         assertNull(userStorage.getUsers().get(2));
     }
 
@@ -76,7 +76,7 @@ class FilmorateApplicationTests {
     void changeUser() {
         User userChange = new User("test@test.ru", "userLoginChange", "displayName", LocalDate.of(1950, 12, 12));
         userChange.setId(2);
-        userStorage.changeUser(userChange);
+        userStorage.change(userChange);
         assertEquals(userChange, userStorage.getUsers().get(2));
     }
 
@@ -131,12 +131,12 @@ class FilmorateApplicationTests {
     @Test
     void getFilmById() {
         film1.setId(1);
-        assertEquals(film1, filmStorage.getFilmById(1));
+        assertEquals(film1, filmStorage.getById(1));
     }
 
     @Test
     void deleteFilmById() {
-        filmStorage.deleteFilmById(1);
+        filmStorage.deleteById(1);
         assertNull(filmStorage.getFilms().get(1));
     }
 
@@ -144,16 +144,16 @@ class FilmorateApplicationTests {
     @Test
     void addFilmStandard() {
         film4.setId(4);
-        filmStorage.addFilm(film4);
+        filmStorage.add(film4);
         assertEquals(film4, filmStorage.getFilms().get(4));
     }
 
 
     @Test
     void changeFilm() {
-        Film filmChange = new Film("Фильм изменен", "Описание изменен", LocalDate.of(2001, 12, 12), 180, new Mpa(2));
+        Film filmChange = new Film("Фильм изменен", "Описание изменен", LocalDate.of(2001, 12, 12), 180, new Mpa(2, "PG"));
         filmChange.setId(1);
-        filmStorage.changeFilm(filmChange);
+        filmStorage.change(filmChange);
         assertEquals(filmChange, filmStorage.getFilms().get(1));
     }
 

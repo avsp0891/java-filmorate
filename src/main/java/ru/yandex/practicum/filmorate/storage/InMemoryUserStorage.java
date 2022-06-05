@@ -27,42 +27,37 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public IdGenerator getIdGenerator() {
-        return idGenerator;
-    }
-
-    @Override
     public List<User> findAll() {
         return new ArrayList<>(getUsers().values());
     }
 
     @Override
-    public User getUserById(Integer userId) throws UserNotFoundException {
+    public User getById(Integer userId) throws UserNotFoundException {
         return getUsers().get(userId);
     }
 
     @Override
-    public User addUser(User user) {
+    public User add(User user) {
         user.setId(getIdGenerator().getNextIdCount());
         getUsers().put(user.getId(), user);
         return user;
     }
 
     @Override
-    public User changeUserById(Integer id, User user) {
+    public User changeById(Integer id, User user) {
         user.setId(id);
         getUsers().put(user.getId(), user);
         return user;
     }
 
     @Override
-    public User changeUser(User user) {
+    public User change(User user) {
         getUsers().put(user.getId(), user);
         return user;
     }
 
     @Override
-    public User deleteUserById(Integer userId) {
+    public User deleteById(Integer userId) {
         for (Integer idFriend : getUsers().get(userId).getFriends()) {
             getUsers().get(idFriend).getFriends().remove(userId);
         }

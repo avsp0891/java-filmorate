@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.Exceptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.Exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.IdGenerator;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -34,10 +33,6 @@ public class FilmService {
         return filmStorage.getFilms();
     }
 
-    public IdGenerator getIdGenerator() {
-        return filmStorage.getIdGenerator();
-    }
-
     public List<Film> findAll() {
         return filmStorage.findAll();
     }
@@ -47,12 +42,12 @@ public class FilmService {
             log.info("Фильм с идентификатором {} не найден.", filmId);
             throw new FilmNotFoundException("Фильм с id " + filmId + " не найден");
         }
-        return filmStorage.getFilmById(filmId);
+        return filmStorage.getById(filmId);
     }
 
     public Film addFilm(Film film) {
         filmValidation(film);
-        return filmStorage.addFilm(film);
+        return filmStorage.add(film);
     }
 
     public Film changeFilmById(Integer id, Film film) {
@@ -62,7 +57,7 @@ public class FilmService {
         }
         filmValidation(film);
         film.setId(id);
-        return filmStorage.changeFilmById(id, film);
+        return filmStorage.changeById(id, film);
     }
 
     public Film changeFilm(Film film) {
@@ -72,7 +67,7 @@ public class FilmService {
         }
         filmValidation(film);
         film.setId(film.getId());
-        return filmStorage.changeFilm(film);
+        return filmStorage.change(film);
     }
 
 
@@ -80,7 +75,7 @@ public class FilmService {
         if (!getFilms().containsKey(filmId)) {
             throw new FilmNotFoundException("Фильм с id " + filmId + " не найден");
         }
-        return filmStorage.deleteFilmById(filmId);
+        return filmStorage.deleteById(filmId);
     }
 
 

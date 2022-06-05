@@ -18,7 +18,6 @@ public class InMemoryFilmStorage implements FilmStorage {
         return films;
     }
 
-    @Override
     public IdGenerator getIdGenerator() {
         return idGenerator;
     }
@@ -29,32 +28,32 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film getFilmById(Integer filmId) {
+    public Film getById(Integer filmId) {
         return films.get(filmId);
     }
 
     @Override
-    public Film addFilm(Film film) {
+    public Film add(Film film) {
         film.setId(idGenerator.getNextIdCount());
         films.put(film.getId(), film);
         return film;
     }
 
     @Override
-    public Film changeFilmById(Integer id, Film film) {
+    public Film changeById(Integer id, Film film) {
         film.setId(id);
         films.put(film.getId(), film);
         return film;
     }
 
     @Override
-    public Film changeFilm(Film film) {
+    public Film change(Film film) {
         films.put(film.getId(), film);
         return film;
     }
 
     @Override
-    public Film deleteFilmById(Integer filmId) {
+    public Film deleteById(Integer filmId) {
         return films.remove(filmId);
     }
 

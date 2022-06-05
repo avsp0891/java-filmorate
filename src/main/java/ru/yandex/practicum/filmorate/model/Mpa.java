@@ -11,28 +11,16 @@ import java.util.Objects;
 @Setter
 public class Mpa {
     private Integer id;
-    private MpaName name;
+    private String name;
 
     @JsonCreator
     public Mpa(Integer id) {
         this.id = id;
-        switch (id) {
-            case 1:
-                name = MpaName.G;
-                break;
-            case 2:
-                name = MpaName.PG;
-                break;
-            case 3:
-                name = MpaName.PG_13;
-                break;
-            case 4:
-                name = MpaName.R;
-                break;
-            case 5:
-                name = MpaName.NC_17;
-                break;
-        }
+    }
+
+    public Mpa(Integer id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     @Override
@@ -40,7 +28,7 @@ public class Mpa {
         if (this == o) return true;
         if (!(o instanceof Mpa)) return false;
         Mpa mpa = (Mpa) o;
-        return Objects.equals(id, mpa.id) && name == mpa.name;
+        return Objects.equals(id, mpa.id) && Objects.equals(name, mpa.name);
     }
 
     @Override
@@ -49,10 +37,4 @@ public class Mpa {
     }
 }
 
-enum MpaName {
-    G,
-    PG,
-    PG_13,
-    R,
-    NC_17
-}
+

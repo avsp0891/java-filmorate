@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
@@ -151,15 +150,15 @@ class FilmControllerTest {
 
     }
 
-    @Test
-    void getNextIdCount() {
-        assertEquals(1, filmStorage.getIdGenerator().getNextIdCount());
-        assertEquals(2, filmStorage.getIdGenerator().getNextIdCount());
-    }
+//    @Test
+//    void getNextIdCount() {
+//        assertEquals(1, filmStorage.getIdGenerator().getNextIdCount());
+//        assertEquals(2, filmStorage.getIdGenerator().getNextIdCount());
+//    }
 
     @Test
     void addLikeStandard() {
-        userStorage.addUser(user);
+        userStorage.add(user);
         filmController.addFilm(film);
         filmController.addLike(1,1);
         assertEquals(1, filmStorage.getFilms().get(1).getLikeCount());
@@ -168,7 +167,7 @@ class FilmControllerTest {
 
     @Test
     void addLikeFilmNotFound() {
-        userStorage.addUser(user);
+        userStorage.add(user);
         final FilmNotFoundException e = assertThrows(
                 FilmNotFoundException.class,
                 () -> filmController.addLike(1,1)
@@ -188,7 +187,7 @@ class FilmControllerTest {
 
     @Test
     void deleteLikeStandard() {
-        userStorage.addUser(user);
+        userStorage.add(user);
         filmController.addFilm(film);
         filmController.addLike(1,1);
         filmController.deleteLike(1,1);
@@ -217,11 +216,11 @@ class FilmControllerTest {
 
     @Test
     void getPopularFilmsStandard() {
-        userStorage.addUser(user);
+        userStorage.add(user);
         User user2 = new User("2@test.ru", "userLogin2", "displayName2", LocalDate.of(1960, 12, 12));
         Film film2 = new Film("Фильм2", "Описание2", LocalDate.of(1901, 12, 12), 180, new Mpa(2));
-        userStorage.addUser(user);
-        userStorage.addUser(user2);
+        userStorage.add(user);
+        userStorage.add(user2);
         filmController.addFilm(film);
         filmController.addFilm(film2);
         filmController.addLike(1,1);

@@ -7,7 +7,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.Exceptions.UserNotFoundException;
-import ru.yandex.practicum.filmorate.model.IdGenerator;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.ResultSet;
@@ -38,18 +37,13 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public IdGenerator getIdGenerator() {
-        return null;
-    }
-
-    @Override
     public List<User> findAll() {
         String sql = "select * from filmorate_user";
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs));
     }
 
     @Override
-    public User getUserById(Integer userId) {
+    public User getById(Integer userId) {
         SqlRowSet userRows = jdbcTemplate.queryForRowSet("select * from filmorate_user where USER_ID = ?", userId);
         if (userRows.next()) {
             return makeUser(userRows);
@@ -60,7 +54,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User addUser(User user) {
+    public User add(User user) {
         user.setId(getNextUserId());
         String sql = "INSERT INTO filmorate_user (EMAIL, LOGIN, NAME, BIRTHDAY) VALUES (?,?,?,?)";
         jdbcTemplate.update(sql,
@@ -72,7 +66,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User changeUserById(Integer userId, User user) {
+    public User changeById(Integer userId, User user) {
         String sql = "UPDATE filmorate_user SET EMAIL = ?, LOGIN = ?, NAME = ?, BIRTHDAY = ? WHERE USER_ID = '" + userId + "'";
         jdbcTemplate.update(sql,
                 user.getEmail(),
@@ -83,7 +77,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User changeUser(User user) {
+    public User change(User user) {
         String sql = "UPDATE filmorate_user SET EMAIL = ?, LOGIN = ?, NAME = ?, BIRTHDAY = ? WHERE USER_ID = '" + user.getId() + "'";
         jdbcTemplate.update(sql,
                 user.getEmail(),
@@ -94,9 +88,9 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User deleteUserById(Integer userId) {
+    public User deleteById(Integer userId) {
         String sql = "DELETE FROM filmorate_user WHERE USER_ID = ?";
-        User user = getUserById(userId);
+        User user = getById(userId);
         jdbcTemplate.update(sql, userId);
         return user;
     }
@@ -107,7 +101,7 @@ public class UserDbStorage implements UserStorage {
         jdbcTemplate.update(sql,
                 userId,
                 friendId);
-        return getUserById(userId);
+        return getById(userId);
     }
 
     @Override
@@ -120,7 +114,7 @@ public class UserDbStorage implements UserStorage {
 //        jdbcTemplate.update(sql,
 //                friendId,
 //                userId);
-        return getUserById(userId);
+        return getById(userId);
     }
 
     public User deleteFriendRequest(Integer userId, Integer friendId) {
@@ -131,7 +125,7 @@ public class UserDbStorage implements UserStorage {
         jdbcTemplate.update(sql,
                 friendId,
                 userId);
-        return getUserById(userId);
+        return getById(userId);
     }
 
     @Override
@@ -140,7 +134,7 @@ public class UserDbStorage implements UserStorage {
         jdbcTemplate.update(sql,
                 userId,
                 friendId);
-        return getUserById(userId);
+        return getById(userId);
     }
 
     @Override
