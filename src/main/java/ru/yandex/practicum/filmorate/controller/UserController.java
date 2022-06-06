@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import javax.validation.Valid;
 import java.util.*;
@@ -17,25 +16,23 @@ import java.util.*;
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserStorage userStorage;
     private final UserService userService;
 
     @Autowired
-    public UserController(UserStorage userStorage, UserService userService) {
-        this.userStorage = userStorage;
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
     @GetMapping
     public List<User> findAll() {
         log.debug("Получение списка всех пользователей");
-        return userStorage.findAll();
+        return userService.findAll();
     }
 
     @GetMapping("/{id}")
     public User getUserById(@PathVariable(value = "id") Integer id) {
         log.debug("Получение пользователя : \n{}", id);
-        return userStorage.getUserById(id);
+        return userService.getUserById(id);
     }
 
 
@@ -54,19 +51,19 @@ public class UserController {
     @PostMapping
     public User addUser(@Valid @RequestBody User user) {
         log.debug("Добавление нового пользователя : \n{}", user);
-        return userStorage.addUser(user);
+        return userService.addUser(user);
     }
 
     @PutMapping("/{id}")
     public User changeUser(@PathVariable(value = "id") Integer id, @Valid @RequestBody User user) {
         log.debug("Изменение нового пользователя : \n{}", user);
-        return userStorage.changeUserById(id, user);
+        return userService.changeUserById(id, user);
     }
 
     @PutMapping
     public User changeUser(@Valid @RequestBody User user) {
         log.debug("Изменение нового пользователя : \n{}", user);
-        return userStorage.changeUser(user);
+        return userService.changeUser(user);
     }
 
     @PutMapping("/{userId}/friends/{friendId}")
@@ -84,7 +81,7 @@ public class UserController {
     @DeleteMapping("/{id}")
     public User deleteUserById(@PathVariable(value = "id") Integer id) {
         log.debug("Удаление пользователя {}", id);
-        return userStorage.deleteUserById(id);
+        return userService.deleteUserById(id);
     }
 
 

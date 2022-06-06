@@ -29,7 +29,7 @@ class UserControllerTest {
     private void setUp() {
         userStorage = new InMemoryUserStorage();
         userService = new UserService(userStorage);
-        userController = new UserController(userStorage, userService);
+        userController = new UserController(userService);
         user = new User("test@test.ru", "userLogin", "displayName", LocalDate.of(1950, 12, 12));
     }
 
@@ -150,15 +150,18 @@ class UserControllerTest {
 
     @Test
     void changeUserNotFound() {
-        userController.changeUser(0, user);
-        assertNull(userStorage.getUsers().get(0));
+        final UserNotFoundException e = assertThrows(
+                UserNotFoundException.class,
+                () ->  userController.changeUser(0, user)
+        );
+        assertEquals("Пользователь с id 0 не найден", e.getMessage());
     }
 
-    @Test
-    void getNextIdCount() {
-        assertEquals(1, userStorage.getIdGenerator().getNextIdCount());
-        assertEquals(2, userStorage.getIdGenerator().getNextIdCount());
-    }
+//    @Test
+//    void getNextIdCount() {
+//        assertEquals(1, userStorage.getIdGenerator().getNextIdCount());
+//        assertEquals(2, userStorage.getIdGenerator().getNextIdCount());
+//    }
 
     @Test
     void addFriendStandard() {
@@ -166,8 +169,8 @@ class UserControllerTest {
         userController.addUser(user);
         userController.addUser(user2);
         userController.addFriend(1,2);
-        assertEquals(Set.of(2), userController.getUserStorage().getUsers().get(1).getFriends());
-        assertEquals(Set.of(1), userController.getUserStorage().getUsers().get(2).getFriends());
+        assertEquals(Set.of(2), userStorage.getUsers().get(1).getFriends());
+        assertEquals(Set.of(1), userStorage.getUsers().get(2).getFriends());
     }
 
     @Test
@@ -199,7 +202,7 @@ class UserControllerTest {
         userController.addFriend(1,2);
         userController.addFriend(1,3);
         userController.deleteFriend(1,3);
-        assertEquals(Set.of(2), userController.getUserStorage().getUsers().get(1).getFriends());
+        assertEquals(Set.of(2), userStorage.getUsers().get(1).getFriends());
     }
 
     @Test

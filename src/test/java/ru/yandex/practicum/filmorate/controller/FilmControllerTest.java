@@ -6,9 +6,9 @@ import ru.yandex.practicum.filmorate.Exceptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.Exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.Exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
@@ -34,8 +34,8 @@ class FilmControllerTest {
         userStorage = new InMemoryUserStorage();
         filmStorage = new InMemoryFilmStorage();
         filmService = new FilmService(filmStorage, userStorage);
-        filmController = new FilmController(filmStorage, filmService);
-        film = new Film("Фильм", "Описание", LocalDate.of(1900, 12, 12), 120);
+        filmController = new FilmController(filmService);
+        film = new Film("Фильм", "Описание", LocalDate.of(1900, 12, 12), 120, new Mpa(1));
         user = new User("test@test.ru", "userLogin", "displayName", LocalDate.of(1950, 12, 12));
 
     }
@@ -135,26 +135,30 @@ class FilmControllerTest {
     @Test
     void changeFilmStandard() {
         filmController.addFilm(film);
-        Film film2 = new Film("Фильм2", "Описание2", LocalDate.of(1901, 12, 12), 180);
+        Film film2 = new Film("Фильм2", "Описание2", LocalDate.of(1901, 12, 12), 180, new Mpa(2));
         filmController.changeFilm(1, film2);
         assertEquals(film2, filmStorage.getFilms().get(1));
     }
 
     @Test
     void changeFilmNotFound() {
-        filmController.changeFilm(0, film);
-        assertNull(filmStorage.getFilms().get(0));
+        final FilmNotFoundException e = assertThrows(
+                FilmNotFoundException.class,
+                () -> filmController.changeFilm(0, film)
+        );
+        assertEquals("Фильм с id 0 не найден", e.getMessage());
+
     }
 
-    @Test
-    void getNextIdCount() {
-        assertEquals(1, filmStorage.getIdGenerator().getNextIdCount());
-        assertEquals(2, filmStorage.getIdGenerator().getNextIdCount());
-    }
+//    @Test
+//    void getNextIdCount() {
+//        assertEquals(1, filmStorage.getIdGenerator().getNextIdCount());
+//        assertEquals(2, filmStorage.getIdGenerator().getNextIdCount());
+//    }
 
     @Test
     void addLikeStandard() {
-        userStorage.addUser(user);
+        userStorage.add(user);
         filmController.addFilm(film);
         filmController.addLike(1,1);
         assertEquals(1, filmStorage.getFilms().get(1).getLikeCount());
@@ -163,7 +167,7 @@ class FilmControllerTest {
 
     @Test
     void addLikeFilmNotFound() {
-        userStorage.addUser(user);
+        userStorage.add(user);
         final FilmNotFoundException e = assertThrows(
                 FilmNotFoundException.class,
                 () -> filmController.addLike(1,1)
@@ -183,7 +187,7 @@ class FilmControllerTest {
 
     @Test
     void deleteLikeStandard() {
-        userStorage.addUser(user);
+        userStorage.add(user);
         filmController.addFilm(film);
         filmController.addLike(1,1);
         filmController.deleteLike(1,1);
@@ -212,11 +216,11 @@ class FilmControllerTest {
 
     @Test
     void getPopularFilmsStandard() {
-        userStorage.addUser(user);
+        userStorage.add(user);
         User user2 = new User("2@test.ru", "userLogin2", "displayName2", LocalDate.of(1960, 12, 12));
-        Film film2 = new Film("Фильм2", "Описание2", LocalDate.of(1901, 12, 12), 180);
-        userStorage.addUser(user);
-        userStorage.addUser(user2);
+        Film film2 = new Film("Фильм2", "Описание2", LocalDate.of(1901, 12, 12), 180, new Mpa(2));
+        userStorage.add(user);
+        userStorage.add(user2);
         filmController.addFilm(film);
         filmController.addFilm(film2);
         filmController.addLike(1,1);

@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import ru.yandex.practicum.filmorate.model.IdGenerator;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
@@ -10,18 +9,24 @@ public interface UserStorage {
 
     Map<Integer, User> getUsers();
 
-    IdGenerator getIdGenerator();
-
     List<User> findAll();
 
-    User getUserById(Integer userId);
+    User getById(Integer userId);
 
-    User addUser(User user);
+    User add(User user);
 
-    User changeUserById(Integer userId, User user);
+    User changeById(Integer userId, User user);
 
-    User changeUser(User user);
+    User change(User user);
 
-    User deleteUserById(Integer userId);
+    User deleteById(Integer userId);
+
+    User addFriend(Integer userId, Integer friendId);
+
+    User deleteFriend(Integer userId, Integer friendId);
+
+    List<User> getFriendsById(Integer userId);
+
+    List<User> getCommonFriends(Integer id, Integer otherId);
 
 }

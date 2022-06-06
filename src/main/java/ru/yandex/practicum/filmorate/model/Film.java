@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import javax.validation.constraints.*;
@@ -20,14 +22,18 @@ public class Film {
     private Integer duration;
     private Integer likeCount;
     private Set<Integer> usersWhoLikedTheMovie;
+    private Set<Integer> genres;
+    private Mpa mpa;
 
-
-    public Film(String name, String description, LocalDate releaseDate, Integer duration) {
+    @JsonCreator
+    public Film(String name, String description, LocalDate releaseDate, Integer duration, @JsonProperty("mpa") Mpa mpa) {
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
         this.likeCount = 0;
         this.usersWhoLikedTheMovie = new HashSet<>();
+        this.genres = new HashSet<>();
+        this.mpa = mpa;
     }
 }

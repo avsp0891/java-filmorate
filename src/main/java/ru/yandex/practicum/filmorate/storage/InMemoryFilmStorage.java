@@ -1,17 +1,16 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.Exceptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.IdGenerator;
+
 import java.util.*;
 
-import static ru.yandex.practicum.filmorate.model.FilmValidation.filmValidation;
 
 @Component
-public class InMemoryFilmStorage implements FilmStorage{
+public class InMemoryFilmStorage implements FilmStorage {
 
-    private final  Map<Integer, Film> films = new HashMap<>();
+    private final Map<Integer, Film> films = new HashMap<>();
     private final IdGenerator idGenerator = new IdGenerator();
 
     @Override
@@ -19,7 +18,6 @@ public class InMemoryFilmStorage implements FilmStorage{
         return films;
     }
 
-    @Override
     public IdGenerator getIdGenerator() {
         return idGenerator;
     }
@@ -30,47 +28,57 @@ public class InMemoryFilmStorage implements FilmStorage{
     }
 
     @Override
-    public Film getFilmById(Integer filmId) {
-        if (!films.containsKey(filmId)) {
-            throw new FilmNotFoundException("Фильм с id " + filmId + " не найден");
-        }
+    public Film getById(Integer filmId) {
         return films.get(filmId);
     }
 
     @Override
-    public Film addFilm(Film film) {
-        filmValidation(film);
+    public Film add(Film film) {
         film.setId(idGenerator.getNextIdCount());
         films.put(film.getId(), film);
         return film;
     }
 
     @Override
-    public Film changeFilmById(Integer id, Film film) {
-        if (films.containsKey(id)) {
-            filmValidation(film);
-            film.setId(id);
-            films.put(film.getId(), film);
-            return film;
-        }
-        return null;
+    public Film changeById(Integer id, Film film) {
+        film.setId(id);
+        films.put(film.getId(), film);
+        return film;
     }
 
     @Override
-    public Film changeFilm(Film film) {
-        if (films.containsKey(film.getId())) {
-            filmValidation(film);
-            films.put(film.getId(), film);
-            return film;
-        } else throw new FilmNotFoundException("Фильм с id " + film.getId() + " не найден");
+    public Film change(Film film) {
+        films.put(film.getId(), film);
+        return film;
     }
 
     @Override
-    public Film deleteFilmById(Integer filmId) {
-        if (!films.containsKey(filmId)) {
-            throw new FilmNotFoundException("Фильм с id " + filmId + " не найден");
-        }
+    public Film deleteById(Integer filmId) {
         return films.remove(filmId);
+    }
+
+    @Override
+    public Film addLike(Integer filmId, Integer userId) {
+        getFilms().get(filmId).getUsersWhoLikedTheMovie().add(userId);
+        getFilms().get(filmId).setLikeCount(getFilms().get(filmId).getUsersWhoLikedTheMovie().size());
+        return getFilms().get(filmId);
+    }
+
+    @Override
+    public Film deleteLike(Integer filmId, Integer userId) {
+        getFilms().get(filmId).getUsersWhoLikedTheMovie().remove(userId);
+        getFilms().get(filmId).setLikeCount(getFilms().get(filmId).getUsersWhoLikedTheMovie().size());
+        return getFilms().get(filmId);
+    }
+
+    @Override
+    public List<Film> getPopularFilms(Integer count) {
+        if (getFilms().size() <= count) {
+            count = getFilms().size();
+        }
+        List<Film> list = new ArrayList<>(getFilms().values());
+        list.sort((film1, film2) -> film2.getLikeCount() - film1.getLikeCount());
+        return list.subList(0, count);
     }
 
 }
